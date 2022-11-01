@@ -11,7 +11,7 @@ import GoogleMaps
   if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
           }
-        GMSServices.provideAPIKey("AIzaSyAn-fMwmAG2det3KD_y8dj0AjzNA1lt8Sc")
+        GMSServices.provideAPIKey("AIzaSyAn-fMwmAG2det3KD_y8dj0AjzNA1lt8Sc-ccc")// todo:-ccc add
    FirebaseApp.configure()
     GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)

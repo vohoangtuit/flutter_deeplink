@@ -99,12 +99,12 @@ class _MyHomePageState extends State<MyHomePage> {
   _handelIntentLinkDetail(Uri uri)async{
     setState(() {
       deepLink.link =uri.toString();
-      deepLink.tourId =uri.queryParameters['tourId']!=null?uri.queryParameters['tourId']:'';
-      deepLink.utm_source =uri.queryParameters['utm_source']!=null?uri.queryParameters['utm_source']:'';
-      deepLink.rk =uri.queryParameters['rk']!=null?uri.queryParameters['rk']:'';
-      deepLink.atnct1 =uri.queryParameters['atnct1']!=null?uri.queryParameters['atnct1']:'';
-      deepLink.atnct2 =uri.queryParameters['atnct2']!=null?uri.queryParameters['atnct2']:'';
-      deepLink.atnct3 =uri.queryParameters['atnct3']!=null?uri.queryParameters['atnct3']:'';
+      deepLink.tourId =uri.queryParameters['tourId'] ?? '';
+      deepLink.utm_source =uri.queryParameters['utm_source'] ?? '';
+      deepLink.rk =uri.queryParameters['rk'] ?? '';
+      deepLink.atnct1 =uri.queryParameters['atn-ct1']??'';
+      deepLink.atnct2 =uri.queryParameters['atnct2'] ?? '';
+      deepLink.atnct3 =uri.queryParameters['atnct3'] ?? '';
     });
 
   }

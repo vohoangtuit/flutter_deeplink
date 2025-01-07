@@ -1,19 +1,20 @@
-import UIKit
 import Flutter
-import Firebase
-import GoogleMaps
-@UIApplicationMain
+import UIKit
+import app_links
+@main
 @objc class AppDelegate: FlutterAppDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-  if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().delegate = self as? UNUserNotificationCenterDelegate
-          }
-        GMSServices.provideAPIKey("AIzaSyAn-fMwmAG2det3KD_y8dj0AjzNA1lt8Sc-ccc")// todo:-ccc add
-   FirebaseApp.configure()
     GeneratedPluginRegistrant.register(with: self)
+
+     // Deep link for app_links Retrieve the link from parameters
+        if let url = AppLinks.shared.getLink(launchOptions: launchOptions) {
+          // We have a link, propagate it to your Flutter app
+          AppLinks.shared.handleLink(url: url)
+          return true // Returning true will stop the propagation to other packages
+        }
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

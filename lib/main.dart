@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app_links/app_links.dart';
+import 'package:share_handler/share_handler.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -158,52 +159,52 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
   _initShare()async{
-    // SharedMedia? media;
-    // final handler = ShareHandler.instance;
-    // media = await handler.getInitialSharedMedia();
-    //
-    // handler.sharedMediaStream.listen((SharedMedia media) {
-    //   setState(() {
-    //     from ='listen';
-    //   });
-    //   log(media);
-    // });
-    // handler.getInitialSharedMedia().then((data) {
-    //   if (data != null) {
-    //     setState(() {
-    //       from ='getInitialSharedMedia';
-    //     });
-    //     log(data);
-    //   }else{
-    //     print('getInitialSharedMedia null');
-    //   }
-    // });
+    SharedMedia? media;
+    final handler = ShareHandler.instance;
+    media = await handler.getInitialSharedMedia();
+
+    handler.sharedMediaStream.listen((SharedMedia media) {
+      setState(() {
+        from ='listen';
+      });
+      log(media);
+    });
+    handler.getInitialSharedMedia().then((data) {
+      if (data != null) {
+        setState(() {
+          from ='getInitialSharedMedia';
+        });
+        log(data);
+      }else{
+        print('getInitialSharedMedia null');
+      }
+    });
 
   }
-  // log(SharedMedia media){
-  //   print('***************************************');
-  //   print('content ${media.content}');
-  //    print('attachments ${media.attachments}');
-  //   // print('conversationIdentifier ${media.conversationIdentifier}');
-  //   // print('senderIdentifier ${media.senderIdentifier}');
-  //   // print('speakableGroupName ${media.speakableGroupName}');
-  //   // print('serviceName ${media.serviceName}');
-  //
-  //   if(media.content!=null){
-  //     setState(() {
-  //       content ='content: ${media.content!}';
-  //     });
-  //     Uri uri = Uri.parse(media.content!);
-  //     print('uri ${uri.toString()}');
-  //     print('queryParameters ${uri.queryParameters['text']}');
-  //     setState(() {
-  //       text =uri.queryParameters['text']??'';
-  //     });
-  //   }else if(media.attachments!=null){
-  //     setState(() {
-  //       content ='attachments: ${media.attachments!.toString()}';
-  //     });
-  //   }
-  // }
+  log(SharedMedia media){
+    print('***************************************');
+    print('content ${media.content}');
+     print('attachments ${media.attachments}');
+    // print('conversationIdentifier ${media.conversationIdentifier}');
+    // print('senderIdentifier ${media.senderIdentifier}');
+    // print('speakableGroupName ${media.speakableGroupName}');
+    // print('serviceName ${media.serviceName}');
+
+    if(media.content!=null){
+      setState(() {
+        content ='content: ${media.content!}';
+      });
+      Uri uri = Uri.parse(media.content!);
+      print('uri ${uri.toString()}');
+      print('queryParameters ${uri.queryParameters['text']}');
+      setState(() {
+        text =uri.queryParameters['text']??'';
+      });
+    }else if(media.attachments!=null){
+      setState(() {
+        content ='attachments: ${media.attachments!.toString()}';
+      });
+    }
+  }
 }
 

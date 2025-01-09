@@ -40,8 +40,11 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^5.0.0
-  app_links: ^6.3.3
-  share_handler: ^0.0.22
+  receive_sharing_intent: ^1.8.1
+
+ # app_links: ^6.3.3
+#  share_handler: ^0.0.22
+  fluttertoast: ^8.2.10
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

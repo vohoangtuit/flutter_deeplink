@@ -1,6 +1,7 @@
+import 'dart:async';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/material.dart';
-import 'package:app_links/app_links.dart';
-import 'package:share_handler/share_handler.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -32,17 +33,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  String from = '';
-  String content = '';
-  String text = '';
-
-  String contentAppLink = '';
-  String textAppLink = '';
-  String app1 = '';
-  String app2 = '';
-  String app3 = '';
-  String app4 = '';
-  String app5 = '';
+  late StreamSubscription _intentSub;
+  final _sharedFiles = <SharedMediaFile>[];
 
   @override
   Widget build(BuildContext context) {
@@ -55,39 +47,12 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'share_handler',
-            ),
-            Text(
-              text,
-            ),
-            SizedBox(height: 5,),
-            Text(
-              content,
-            ),
-            SizedBox(height: 10,),
-            Text(
-              '***************************************',
-            ),
-            SizedBox(height: 10,),
-            Text(
-              'app_links',
-            ),
-            SizedBox(height: 10,),
-            Text(
-              textAppLink,
+            Text(_sharedFiles
+                .map((f) => f.toMap())
+                .join(",\n****************\n")),
 
-            ),
-            SizedBox(height: 4,),
-            Text(contentAppLink,),
-            Text(
-              '***************************************',
-            ),
-            Text(app1,),
-            Text(app2,),
-            Text(app3,),
-            Text(app4,),
-            Text(app5,),
+
+
           ],
         ),
       ),
@@ -98,113 +63,159 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _initDeeplink();
-    _initShare();
+    _shareIntent();
+  }
+  _shareIntent(){
+    _intentSub = ReceiveSharingIntent.instance.getMediaStream().listen((value) {
+      setState(() {
+        _sharedFiles.clear();
+        _sharedFiles.addAll(value);
+
+        print(_sharedFiles.map((f) => f.toMap()));
+      });
+    }, onError: (err) {
+      print("getIntentDataStream error: $err");
+    });
+
+    // Get the media sharing coming from outside the app while the app is closed.
+    ReceiveSharingIntent.instance.getInitialMedia().then((value) {
+      Fluttertoast.showToast(
+          msg: value.toString(),
+          backgroundColor: Colors.grey,
+          gravity: ToastGravity.CENTER,
+          fontSize: 16.0);
+
+      setState(() {
+        _sharedFiles.clear();
+        _sharedFiles.addAll(value);
+        print(_sharedFiles.map((f) => f.toMap()));
+
+        // Tell the library that we are done processing the intent.
+        ReceiveSharingIntent.instance.reset();
+      });
+    });
   }
 
-  _initDeeplink() {
-    AppLinks appLinks = AppLinks(); // AppLinks is singleton
-
-    appLinks.uriLinkStream.listen((uri) {
-
-      if (uri.data != null) {
-        setState(() {
-          contentAppLink = uri.data.toString();
-          app1 =uri.data.toString();
-          textAppLink =uri.queryParameters['text']??'';
-        });
-      }
-    });
-    appLinks.stringLinkStream.listen((uri) {
-      Uri urii = Uri.parse(uri.toString());
-
-      setState(() {
-        app2 =uri.toString();
-      });
-      setState(() {
-        contentAppLink = uri.toString();
-        textAppLink =urii.queryParameters['text']??'';
-      });
-        });
-    appLinks.getInitialLink().then((data) {
-      if (data != null) {
-        Uri uri = Uri.parse(data.toString());
-        setState(() {
-          app3 =data.toString();
-          contentAppLink = data.toString();
-          textAppLink =uri.queryParameters['text']??'';
-        });
-      }
-    });
-    appLinks.getInitialLinkString().then((data) {
-      if (data != null) {
-        Uri uri = Uri.parse(data.toString());
-        setState(() {
-          app4 =data.toString();
-          contentAppLink = data.toString();
-          textAppLink =uri.queryParameters['text']??'';
-        });
-      }
-    });
-    appLinks.getLatestLinkString().then((data) {
-      if (data != null) {
-        Uri uri = Uri.parse(data.toString());
-        setState(() {
-          app5 =data.toString();
-          contentAppLink = data.toString();
-          textAppLink =uri.queryParameters['text']??'';
-        });
-      }
-    });
-
-  }
-  _initShare()async{
-    SharedMedia? media;
-    final handler = ShareHandler.instance;
-    media = await handler.getInitialSharedMedia();
-
-    handler.sharedMediaStream.listen((SharedMedia media) {
-      setState(() {
-        from ='listen';
-      });
-      log(media);
-    });
-    handler.getInitialSharedMedia().then((data) {
-      if (data != null) {
-        setState(() {
-          from ='getInitialSharedMedia';
-        });
-        log(data);
-      }else{
-        print('getInitialSharedMedia null');
-      }
-    });
-
-  }
-  log(SharedMedia media){
-    print('***************************************');
-    print('content ${media.content}');
-     print('attachments ${media.attachments}');
-    // print('conversationIdentifier ${media.conversationIdentifier}');
-    // print('senderIdentifier ${media.senderIdentifier}');
-    // print('speakableGroupName ${media.speakableGroupName}');
-    // print('serviceName ${media.serviceName}');
-
-    if(media.content!=null){
-      setState(() {
-        content ='content: ${media.content!}';
-      });
-      Uri uri = Uri.parse(media.content!);
-      print('uri ${uri.toString()}');
-      print('queryParameters ${uri.queryParameters['text']}');
-      setState(() {
-        text =uri.queryParameters['text']??'';
-      });
-    }else if(media.attachments!=null){
-      setState(() {
-        content ='attachments: ${media.attachments!.toString()}';
-      });
-    }
-  }
+  // _initDeeplink() {
+  //   AppLinks appLinks = AppLinks(); // AppLinks is singleton
+  //
+  //   appLinks.uriLinkStream.listen((uri) {
+  //     print('uri1 path : ${uri.path}');
+  //     print('uri1 data: ${uri.data}');
+  //
+  //     if (uri.data != null) {
+  //       setState(() {
+  //         contentAppLink1 = uri.data.toString();
+  //         app1 =uri.data.toString();
+  //         textAppLink =uri.queryParameters['text']??'';
+  //       });
+  //     }
+  //   });
+  //   appLinks.stringLinkStream.listen((uri) {
+  //     print('uri2  : ${uri.toString()}');
+  //
+  //     Uri urii = Uri.parse(uri.toString());
+  //
+  //     setState(() {
+  //       app2 =uri.toString();
+  //     });
+  //     setState(() {
+  //       contentAppLink2 = uri.toString();
+  //       textAppLink =urii.queryParameters['text']??'';
+  //     });
+  //       });
+  //   appLinks.getInitialLink().then((data) {
+  //
+  //     if (data != null) {
+  //       print('uri3  path : ${data.path}');
+  //       print('uri3 data : ${data.data}');
+  //
+  //       Uri uri = Uri.parse(data.toString());
+  //       setState(() {
+  //         app3 =data.toString();
+  //         contentAppLink3 = data.toString();
+  //         textAppLink =uri.queryParameters['text']??'';
+  //       });
+  //     }
+  //   });
+  //   appLinks.getInitialLinkString().then((data) {
+  //     if (data != null) {
+  //       print('uri4   : ${data.toString()}');
+  //
+  //       Uri uri = Uri.parse(data.toString());
+  //       setState(() {
+  //         app4 =data.toString();
+  //         contentAppLink4 = data.toString();
+  //         textAppLink =uri.queryParameters['text']??'';
+  //       });
+  //     }
+  //   });
+  //   appLinks.getLatestLinkString().then((data) {
+  //     if (data != null) {
+  //       print('uri5   : ${data.toString()}');
+  //       Uri uri = Uri.parse(data.toString());
+  //       setState(() {
+  //         app5 =data.toString();
+  //         contentAppLink5 = data.toString();
+  //         textAppLink =uri.queryParameters['text']??'';
+  //       });
+  //     }
+  //   });
+  //
+  // }
+  // _initShare()async{
+  //   final handler = ShareHandler.instance;
+  //  await handler.getInitialSharedMedia();
+  //
+  //   handler.sharedMediaStream.listen((SharedMedia media) {
+  //
+  //     if(media.content!=null){
+  //       setState(() {
+  //         content =media.content!;
+  //       });
+  //       Uri uri = Uri.parse(media.content!);
+  //       text =uri.queryParameters['text']??'';
+  //     }
+  //     //print('attachments: ${media.attachments}');
+  //   });
+  //   handler.getInitialSharedMedia().then((data) {
+  //     if (data != null) {
+  //       Uri uri = Uri.parse(data.content!);
+  //       setState(() {
+  //         content1 =data.content!;
+  //         text1 =uri.queryParameters['text']??'';
+  //       });
+  //     }else{
+  //       print('getInitialSharedMedia null');
+  //     }
+  //
+  //   });
+  //
+  // }
+  // _log(SharedMedia media){
+  //   print('***************************************');
+  //   print('content ${media.content}');
+  //    print('attachments ${media.attachments}');
+  //   // print('conversationIdentifier ${media.conversationIdentifier}');
+  //   // print('senderIdentifier ${media.senderIdentifier}');
+  //   // print('speakableGroupName ${media.speakableGroupName}');
+  //   // print('serviceName ${media.serviceName}');
+  //
+  //   if(media.content!=null){
+  //     setState(() {
+  //       content ='content: ${media.content!}';
+  //     });
+  //     Uri uri = Uri.parse(media.content!);
+  //     print('uri ${uri.toString()}');
+  //     print('queryParameters ${uri.queryParameters['text']}');
+  //     setState(() {
+  //       text =uri.queryParameters['text']??'';
+  //     });
+  //   }else if(media.attachments!=null){
+  //     setState(() {
+  //       content ='attachments: ${media.attachments!.toString()}';
+  //     });
+  //   }
+  // }
 }
 

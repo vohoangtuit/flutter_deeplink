@@ -45,23 +45,24 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>AppGroupId</key>
+    <string>$(CUSTOM_GROUP_ID)</string>
 	<!-- Custom URL scheme sample -->
     	<key>CFBundleURLTypes</key>
     	<array>
     		<dict>
-    		<!-- Your scheme -->
-    		<key>CFBundleURLSchemes</key>
-    		<array>
-    			<string>app</string>
-    		</array>
-    		<!-- Optional URL to distinguish your app from others
-    		     in case of conflicting scheme name -->
-    		<key>CFBundleURLName</key>
-    		<string>vn.com.deeplink</string>
+
+    		<key>CFBundleTypeRole</key>
+                    <string>Editor</string>
+                    <key>CFBundleURLSchemes</key>
+                    <array>
+                        <string>ShareMedia-$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+                    </array>
     		</dict>
     	</array>
+    	<key>NSPhotoLibraryUsageDescription</key>
+        <string>To upload photos, please allow permission to access your photo library.</string>
     	<!-- END Custom URL scheme sample -->
-	<key>FlutterDeepLinkingEnabled</key>
-    <false/>
+
 </dict>
 </plist>

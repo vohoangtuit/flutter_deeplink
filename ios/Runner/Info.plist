@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>deeplink</string>
+	<string>Deeplink</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -45,9 +45,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Custom URL scheme sample -->
 	<key>AppGroupId</key>
     <string>$(CUSTOM_GROUP_ID)</string>
-	<!-- Custom URL scheme sample -->
+
     	<key>CFBundleURLTypes</key>
     	<array>
     		<dict>
@@ -62,7 +63,7 @@
     	</array>
     	<key>NSPhotoLibraryUsageDescription</key>
         <string>To upload photos, please allow permission to access your photo library.</string>
-    	<!-- END Custom URL scheme sample -->
+    <!-- END Custom URL scheme sample -->
 
 </dict>
 </plist>
